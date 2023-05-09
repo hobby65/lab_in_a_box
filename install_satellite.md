@@ -1,6 +1,6 @@
 # Install Satellite
 
-A satellite server is the central maangent/deployment server for  
+A satellite server is the central managment/deployment server for  
 enterprise environments based on RedHat Enterprise Linux.  
 
 In order to successfully run a satellite server You must have a license.  
