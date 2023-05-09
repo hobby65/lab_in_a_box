@@ -74,6 +74,11 @@ An additional play is also included to configure gitea on a host.
 
 This code can deploy your VM's on your host using vagrant and the inventory.
 
+## Results after configuration and playtime
+
+Here ars a few screenshots of my lab environment that I created   
+[Screenshots](screenshots.md)  
+
 
 ## License
 TBD
