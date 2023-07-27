@@ -8,6 +8,8 @@ server online, just run yum/dnf install...
 We want the repository server to host multiple versions of Rhel, so we adapt  
 the description on the web to our needs.
 
+This host will double as DNS server for our lab.
+
 ## The VM
 
 First we need to create a VM, with the specs as follows:
@@ -27,6 +29,7 @@ So all we install on top of the base install:
 * kernel-devel
 * gcc
 * make
+* named
 
 Start the machine, install the OS and configure the network IP address.  
 Do not forget to add the VBoxGuestAdditions
@@ -79,6 +82,87 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 
 Obviously the above is for a rhel8 installation, adapt settings for rhel9 if needed.  
 Your new VM can install packges from the reposerver now.  
+
+## DNS config
+
+The named package ensures that the named software is installed.
+Now we have to configure the domain to make it run.
+
+We create the following files in the /var/named folder
+localdomain.forward
+localdomain.rev
+
+The files have the following content:
+
+**localdomain.forward**
+```text
+$TTL 3600
+@ SOA reposerver.localdomain. root.localdomain. (
+                                        4      ;Serial 
+                                        15m    ;Refresh
+                                        5m     ;Retry
+                                        30d    ;Expire 
+                                        1h     ;Minimum TTL
+)
+    NS reposerver.localdomain.
+    A 192.168.15.20
+
+host1			IN 	A 	192.168.15.10
+host2 		IN 	A 	192.168.15.11
+reposerver		IN 	A 	192.168.15.20
+gitserver		IN 	A 	192.168.15.21
+privatehub		IN 	A 	192.168.15.22
+...
+```
+
+**localdomain.rev**
+```text
+$TTL 86400
+@ IN SOA reposerver.localdomain. root.localdomain. (
+                                            2020011801 ;Serial
+                                            3600 ;Refresh
+                                            1800 ;Retry
+                                            604800 ;Expire
+                                            86400 ;Minimum TTL
+)
+;Name Server Information
+@ IN NS reposerver.localdomain.
+reposerver     IN      A       192.168.15.20
+
+;Reverse lookup for Name Server
+20 IN PTR reposerver.localdomain.
+
+;PTR Record IP address to Hostname
+10      IN      PTR     host1.localdomain.
+11      IN      PTR     host2.localdomain.
+20	    IN	    PTR	    reposerver.localdomain.
+```
+
+**/etc/named.conf**
+
+Add or modify the following options in the /etc/named.conf
+```text
+options {
+	directory 	"/var/named";
+	forwarders	{ 8.8.8.8; };
+	allow-query     { localhost; 192.168.15.0/24; };
+
+	recursion yes;
+
+
+zone "localdomain." IN {
+	type master;
+	file "localdomain.forward";
+};
+
+zone "15.168.192.in-addr.arpa" IN {
+        type master;
+        file "localdomain.rev";
+};
+```
+Add the named service to start with the system and add the nodes to the dns files
+Run the service and enjoy your dns..
+Feel free to replace localdomain with any valid name for your lab.
 
 Next: [Install Git](create_vm.md)
 
