@@ -12,10 +12,9 @@ GitHub or a corporate GIT implementation, but your will be dependant of a networ
 for this. I wanted to be able to work during commutes, where there is no internet connection  
 availlable.
 
-As a deployment with ansible enviroment depends heavily on DNS, and we haven't implemented  
-one, we have to configure all hosts in the /etc/hosts file. In the infrastructure_vbox code,  
-The newly deployed hosts will be added to the deployment server. For the other machines, you  
-should create a role to accomplish this.
+As a deployment with ansible enviroment depends heavily on DNS, we give one og our machines 
+a doubble function as DNS server. We selected the reposerver for this. Feel free to allocate 
+a seprate VM for this, but if memory is an issue, just folow us.
 
 I am assuming here, that you have some knowledge of linux and the distribution you want to  
 use. Not everything will be explained 'to the bone'....  
