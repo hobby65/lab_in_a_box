@@ -54,6 +54,7 @@ Do not forget to open the firewall for http traffic...
 
 ````
 firewall-cmd --add-service=http --permanent
+firewall-cmd --add-service-dns --permanent
 firewall-cmd --reload
 ````
 
